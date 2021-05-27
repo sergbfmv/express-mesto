@@ -1,12 +1,11 @@
-module.exports = {
-    "env": {
+{
+     "env": {
         "browser": true,
         "es2021": true,
         "allow": ["id_", "_id"]
     },
     "extends": [
         "eslint:recommended",
-        "plugin:react/recommended",
         "airbnb-base"
     ],
     "parserOptions": {
@@ -17,8 +16,7 @@ module.exports = {
         "sourceType": "module"
     },
     "plugins": [
-        "react"
     ],
     "rules": {
     }
-};
+  }

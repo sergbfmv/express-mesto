@@ -7,12 +7,11 @@ module.exports.getCards = (req, res) => {
 }
 
 module.exports.createCard = (req, res) => {
-  console.log(req.user._id)
   const { name, link } = req.body
   Card.create({ name, link })
     .then(cards => res.send({ data: cards }))
-    .catch(() => {
-      if (err = 'ValidatorError') {
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
         return res.status(400).send({ message: 'Переданы некоректные данные карточки' })
       } else {
         return res.status(500).send({ message: 'Произошла ошибка' })
@@ -41,7 +40,7 @@ module.exports.likeCard = (req, res) => {
     .catch(() => res.status(500).send({ message: 'Произошла ошибка' }))
 }
 
-module.exports.likeCard = (req, res) => {
+module.exports.dislikeCard = (req, res) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } },
