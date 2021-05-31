@@ -1,9 +1,10 @@
 {
      "env": {
+        "browser": true,
+        "es2021": true,
         "allow": ["_id"]
     },
     "extends": [
-        "eslint:recommended",
         "airbnb-base"
     ]
   }
