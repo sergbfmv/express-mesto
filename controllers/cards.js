@@ -38,7 +38,13 @@ module.exports.likeCard = (req, res) => {
     { new: true }
   )
     .then(user => res.send({ data: user }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }))
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        return res.status(404).send({ message: 'Карточка с указанным id не найдена' })
+    } else {
+        return res.status(500).send({ message: 'Произошла ошибка' })
+    }
+  })
 }
 
 module.exports.dislikeCard = (req, res) => {
@@ -48,5 +54,11 @@ module.exports.dislikeCard = (req, res) => {
     { new: true }
   )
     .then(user => res.send({ data: user }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }))
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        return res.status(404).send({ message: 'Карточка с указанным id не найдена' })
+    } else {
+        return res.status(500).send({ message: 'Произошла ошибка' })
+    }
+  })
 }
