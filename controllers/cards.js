@@ -24,10 +24,12 @@ module.exports.deleteCard = (req, res) => {
     .then(user => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(404).send({ message: 'Карточка с указанным id не найдена' })
-    } else {
-        return res.status(500).send({ message: 'Произошла ошибка' })
-    }
+        return res.status(400).send({ message: 'Переданы некоректные данные карточки' })
+      } else if (err.name === 'CastError') {
+          return res.status(404).send({ message: 'Карточка с указанным id не найдена' })
+      } else {
+          return res.status(500).send({ message: 'Произошла ошибка' })
+      }
   })
 }
 
@@ -39,11 +41,13 @@ module.exports.likeCard = (req, res) => {
   )
     .then(user => res.send({ data: user }))
     .catch((err) => {
-      if (err.name === 'CastError') {
-        return res.status(404).send({ message: 'Карточка с указанным id не найдена' })
-    } else {
-        return res.status(500).send({ message: 'Произошла ошибка' })
-    }
+      if (err.name === 'ValidationError') {
+        return res.status(400).send({ message: 'Переданы некоректные данные карточки' })
+      } else if (err.name === 'CastError') {
+          return res.status(404).send({ message: 'Карточка с указанным id не найдена' })
+      } else {
+          return res.status(500).send({ message: 'Произошла ошибка' })
+      }
   })
 }
 
@@ -55,10 +59,12 @@ module.exports.dislikeCard = (req, res) => {
   )
     .then(user => res.send({ data: user }))
     .catch((err) => {
-      if (err.name === 'CastError') {
-        return res.status(404).send({ message: 'Карточка с указанным id не найдена' })
-    } else {
-        return res.status(500).send({ message: 'Произошла ошибка' })
-    }
+      if (err.name === 'ValidationError') {
+        return res.status(400).send({ message: 'Переданы некоректные данные карточки' })
+      } else if (err.name === 'CastError') {
+          return res.status(404).send({ message: 'Карточка с указанным id не найдена' })
+      } else {
+          return res.status(500).send({ message: 'Произошла ошибка' })
+      }
   })
 }
