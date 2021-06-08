@@ -1,39 +1,54 @@
+const e = require('express')
+const CastError = require('../errors/cast-error')
+const ForbiddenError = require('../errors/forbidden-error')
+const ValidationError = require('../errors/validation-error')
 const Card = require('../models/card')
+const user = require('../models/user')
 
-module.exports.getCards = (req, res) => {
+module.exports.getCards = (req, res, next) => {
   Card.find({})
     .then(cards => res.send({ data: cards }))
-    .catch(() => res.status(500).send({ message: 'Произошла ошибка' }))
+    .catch(next)
 }
 
-module.exports.createCard = (req, res) => {
+module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body
   Card.create({ name, link, owner: req.user._id })
     .then(cards => res.send({ data: cards }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(400).send({ message: 'Переданы некоректные данные карточки' })
+        const error = new ValidationError('Переданы некорректные данные карточки')
+        next(error)
       } else {
-        return res.status(500).send({ message: 'Произошла ошибка' })
+        next(err)
       }
   })
 }
 
-module.exports.deleteCard = (req, res) => {
-  Card.findByIdAndRemove(req.params.cardId)
-    .then(user => res.send({ data: user }))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        return res.status(400).send({ message: 'Переданы некоректные данные карточки' })
-      } else if (err.name === 'CastError') {
-          return res.status(404).send({ message: 'Карточка с указанным id не найдена' })
-      } else {
-          return res.status(500).send({ message: 'Произошла ошибка' })
+module.exports.deleteCard = (req, res, next) => {
+  Card.findById(req.params.cardId)
+    .then((card) => {
+      if(card.owner == req.user._id) {
+        Card.findByIdAndRemove(req.params.cardId)
+          .then(user => res.send({ data: user }))
+          .catch((err) => {
+            if (err.name === 'CastError') {
+              const error = new CastError('Карточка с указанным id не найдена')
+              next(error)
+            } else {
+                next(err)
+            }
+        })
       }
+      return Promise.reject(new Error('Нельзя удалять чужие карточки!'))
+    })
+    .catch(() => {
+      const error = new ForbiddenError('Нельзя удалять чужие карточки!')
+      next(error)
   })
 }
 
-module.exports.likeCard = (req, res) => {
+module.exports.likeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $addToSet: { likes: req.user._id } },
@@ -42,16 +57,18 @@ module.exports.likeCard = (req, res) => {
     .then(user => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(400).send({ message: 'Переданы некоректные данные карточки' })
+        const error = new ValidationError('Переданы некорректные данные карточки')
+        next(error)
       } else if (err.name === 'CastError') {
-          return res.status(404).send({ message: 'Карточка с указанным id не найдена' })
+          const error = new CastError('Карточка с указанным id не найдена')
+          next(error)
       } else {
-          return res.status(500).send({ message: 'Произошла ошибка' })
+          next(err)
       }
   })
 }
 
-module.exports.dislikeCard = (req, res) => {
+module.exports.dislikeCard = (req, res, next) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
     { $pull: { likes: req.user._id } },
@@ -60,11 +77,13 @@ module.exports.dislikeCard = (req, res) => {
     .then(user => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        return res.status(400).send({ message: 'Переданы некоректные данные карточки' })
+        const error = new ValidationError('Переданы некорректные данные карточки')
+        next(error)
       } else if (err.name === 'CastError') {
-          return res.status(404).send({ message: 'Карточка с указанным id не найдена' })
+          const error = new CastError('Карточка с указанным id не найдена')
+          next(error)
       } else {
-          return res.status(500).send({ message: 'Произошла ошибка' })
+          next(err)
       }
   })
 }
