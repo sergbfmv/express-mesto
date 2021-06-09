@@ -38,18 +38,19 @@ app.post('/signup', celebrate({
 app.use(auth);
 app.use('/', require('./routes/users'));
 app.use('/', require('./routes/cards'))
+app.use('/', require('./routes/notFound'))
 app.use(errors())
 
 app.use((err, req, res, next) => {
   if(!err.statusCode) {
     const { statusCode = 500, message } = err
-    res.status(statusCode).send({
+    return res.status(statusCode).send({
       message: statusCode === 500
         ? 'На сервере произошла ошибка'
         : message
     });
   }
-  res.status(err.statusCode).send({ message: err.message });
+  return res.status(err.statusCode).send({ message: err.message });
 })
 
 app.listen(PORT, () => {

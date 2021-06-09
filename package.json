@@ -1,8 +1,8 @@
 {
   "name": "express-mesto",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Серверная часть проекта Mesto, развернут сервер и подключена база данных",
+  "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "npx eslint",
