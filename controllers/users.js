@@ -13,7 +13,7 @@ module.exports.getUsers = (req, res, next) => {
 };
 
 module.exports.getUser = (req, res, next) => {
-  User.findById(req._id)
+  User.findById(req.params.userId)
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'CastError') {
