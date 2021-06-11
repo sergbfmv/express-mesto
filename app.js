@@ -7,7 +7,6 @@ const app = express();
 const { celebrate, Joi } = require('celebrate');
 const { errors } = require('celebrate');
 const { login, createUser } = require('./controllers/users');
-const auth = require('./middlewares/auth');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -35,7 +34,7 @@ app.post('/signup', celebrate({
     password: Joi.string().required(),
   }),
 }), createUser);
-app.use(auth);
+
 app.use('/', require('./routes/users'));
 app.use('/', require('./routes/cards'));
 app.use('/', require('./routes/notFound'));
