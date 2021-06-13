@@ -20,8 +20,16 @@ router.delete('/cards/:cardId', celebrate({
   }),
 }), auth, deleteCard);
 
-router.put('/cards/:cardId/likes', auth, likeCard);
+router.put('/cards/:cardId/likes', celebrate({
+  params: Joi.object().keys({
+    cardId: Joi.string().alphanum().length(24),
+  }),
+}), auth, likeCard);
 
-router.delete('/cards/:cardId/likes', auth, dislikeCard);
+router.delete('/cards/:cardId/likes', celebrate({
+  params: Joi.object().keys({
+    cardId: Joi.string().alphanum().length(24),
+  }),
+}), auth, dislikeCard);
 
 module.exports = router;

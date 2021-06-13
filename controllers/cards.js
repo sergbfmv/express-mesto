@@ -40,9 +40,13 @@ module.exports.deleteCard = (req, res, next) => {
       }
       return Promise.reject(new Error('Нельзя удалять чужие карточки!'));
     })
-    .catch(() => {
-      const error = new ForbiddenError('Нельзя удалять чужие карточки!');
-      next(error);
+    .catch((err) => {
+      if (err.name === 'TypeError') {
+        const error = new CastError('Карточка с указанным id не найдена');
+        next(error);
+      } else {
+        next(err);
+      }
     });
 };
 
@@ -52,7 +56,13 @@ module.exports.likeCard = (req, res, next) => {
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
-    .then((user) => res.send({ data: user }))
+    .then((user) => {
+      if (user === null) {
+        throw new CastError('Карточка с указанным id не найдена');
+      } else {
+        res.send({ data: user });
+      }
+    })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         const error = new ValidationError('Переданы некорректные данные карточки');
@@ -72,7 +82,13 @@ module.exports.dislikeCard = (req, res, next) => {
     { $pull: { likes: req.user._id } },
     { new: true },
   )
-    .then((user) => res.send({ data: user }))
+    .then((user) => {
+      if (user === null) {
+        throw new CastError('Карточка с указанным id не найдена');
+      } else {
+        res.send({ data: user });
+      }
+    })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         const error = new ValidationError('Переданы некорректные данные карточки');
@@ -80,7 +96,6 @@ module.exports.dislikeCard = (req, res, next) => {
       } else if (err.name === 'CastError') {
         const error = new CastError('Карточка с указанным id не найдена');
         next(error);
-        console.log(next);
       } else {
         next(err);
       }

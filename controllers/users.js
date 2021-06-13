@@ -14,7 +14,13 @@ module.exports.getUsers = (req, res, next) => {
 
 module.exports.getUser = (req, res, next) => {
   User.findById(req.params.userId)
-    .then((user) => res.send({ data: user }))
+    .then((user) => {
+      if (user === null) {
+        throw new CastError('Карточка с указанным id не найдена');
+      } else {
+        res.send({ data: user });
+      }
+    })
     .catch((err) => {
       if (err.name === 'CastError') {
         const error = new CastError('Пользователь с указанным id не найден');
@@ -75,7 +81,13 @@ module.exports.updateProfile = (req, res, next) => {
   const { name, about } = req.body;
   User.findByIdAndUpdate(req.user._id,
     { name: name.toString(), about: about.toString() }, { runValidators: true })
-    .then((user) => res.send({ data: user }))
+    .then((user) => {
+      if (user === null) {
+        throw new CastError('Карточка с указанным id не найдена');
+      } else {
+        res.send({ data: user });
+      }
+    })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         const error = new ValidationError('Переданы некорректные данные пользователя');
@@ -95,7 +107,13 @@ module.exports.updateProfile = (req, res, next) => {
 module.exports.updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
   User.findByIdAndUpdate(req.user._id, { avatar }, { runValidators: true })
-    .then((user) => res.send({ data: user }))
+    .then((user) => {
+      if (user === null) {
+        throw new CastError('Карточка с указанным id не найдена');
+      } else {
+        res.send({ data: user });
+      }
+    })
     .catch((err) => {
       if (err.name === 'ValidationError') {
         const error = new ValidationError('Переданы некорректные данные пользователя');
